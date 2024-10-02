@@ -1,6 +1,7 @@
 package com.sachin.myapplication.ui.view.activity
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.sachin.myapplication.data.model.S
 import com.sachin.myapplication.ui.theme.MyApplicationTheme
-import com.sachin.myapplication.ui.viewmodel.MyViewModel
+import com.sachin.myapplication.ui.viewmodel.UserViewModel
 import com.sachin.myapplication.util.Constants
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -27,7 +28,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val myViewModel by viewModels<MyViewModel>()
+    private val userViewModel by viewModels<UserViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +44,15 @@ class MainActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Button(onClick = {
-                            getApi()
+                            if (userViewModel.users.value.isNullOrEmpty()) {
+                                getApi()
+                            } else {
+                                Toast.makeText(
+                                    applicationContext,
+                                    "you have already user",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         }, Modifier.padding(innerPadding)) {
                             Text(text = "call Api")
                         }
@@ -55,7 +64,7 @@ class MainActivity : ComponentActivity() {
 
     private fun getApi() {
         lifecycleScope.launch {
-            myViewModel.getSignUps().observe(this@MainActivity) {
+            userViewModel.getSignUps().observe(this@MainActivity) {
                 when (it.status) {
                     S.SUCCESS -> {
                         it.data?.let { res ->
