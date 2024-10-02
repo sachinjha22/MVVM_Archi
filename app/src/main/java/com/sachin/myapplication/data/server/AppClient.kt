@@ -19,7 +19,7 @@ object AppClient {
 
     private val getRetrofitQ: Retrofit by lazy {
         val builder = Retrofit.Builder()
-            .baseUrl("http://localhost:8081/")   // user ure base url
+            .baseUrl("http://127.0.0.1:8081/")   // user ure base url
             .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
 
         val dispatcher = Dispatcher()
