@@ -3,11 +3,12 @@ package com.sachin.myapplication.ui.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.sachin.myapplication.data.model.UM
 import com.sachin.myapplication.data.repository.ServerRepository
-import com.sachin.myapplication.db.userdb.UserRepository
+import com.sachin.myapplication.data.repository.UserRepository
 import com.sachin.myapplication.util.Constants
 import com.sachin.myapplication.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,8 +22,23 @@ class UserViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
 
-    private val _users = MutableLiveData<List<UM?>?>()
+    val _users = MutableLiveData<List<UM?>?>()
     val users: LiveData<List<UM?>?> = _users
+
+    init {
+        _users.value = ArrayList()
+    }
+
+    fun insertUser(user: ArrayList<UM>) =
+        viewModelScope.launch {
+            userRepository.insertUsers(user)
+            loadUsers()
+        }
+
+    private fun loadUsers() =
+        viewModelScope.launch {
+            _users.postValue(userRepository.getUsers())
+        }
 
 
     fun getSignUps() = liveData(Dispatchers.IO, Constants.MAX_TIME_OUT) {
@@ -44,16 +60,4 @@ class UserViewModel @Inject constructor(
         }
     }
 
-    fun insertUser(user :ArrayList<UM>){
-        viewModelScope.launch {
-            userRepository.insertUser(user)
-            loadUsers() // Update LiveData after inserting a new user
-        }
-    }
-
-    private fun loadUsers() {
-        viewModelScope.launch {
-            _users.postValue(userRepository.getAllUsers())
-        }
-    }
 }

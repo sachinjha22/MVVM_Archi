@@ -18,10 +18,13 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
+import com.google.gson.Gson
 import com.sachin.myapplication.data.model.S
+import com.sachin.myapplication.data.model.UM
 import com.sachin.myapplication.ui.theme.MyApplicationTheme
 import com.sachin.myapplication.ui.viewmodel.UserViewModel
 import com.sachin.myapplication.util.Constants
+import com.sachin.myapplication.util.fromJson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -30,6 +33,7 @@ class MainActivity : ComponentActivity() {
 
     private val userViewModel by viewModels<UserViewModel>()
 
+    @Suppress("UNCHECKED_CAST")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -60,6 +64,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        userViewModel.users.observe(this) { list ->
+            list?.let { userViewModel.insertUser(list as ArrayList<UM>) }
+        }
     }
 
     private fun getApi() {
@@ -70,7 +78,7 @@ class MainActivity : ComponentActivity() {
                         it.data?.let { res ->
                             try {
                                 if (res.s!!.startsWith(Constants.SUCCESS_CODE)) {
-                                    //// handle success
+                                    afterResponseUser(res.r)
                                 } else {
                                     //// handle not success
                                 }
@@ -90,6 +98,17 @@ class MainActivity : ComponentActivity() {
                         //// handle screen on api loading
                     }
                 }
+            }
+        }
+    }
+
+    private fun afterResponseUser(r: ArrayList<Any?>?) {
+        if (!r.isNullOrEmpty()) {
+            val list: ArrayList<UM>? = Gson().fromJson(Gson().toJson(r))
+            list?.let {
+                userViewModel._users.value = list
+            }.run {
+                //empty and nul list handling }
             }
         }
     }

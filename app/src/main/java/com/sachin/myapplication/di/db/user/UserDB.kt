@@ -1,4 +1,4 @@
-package com.sachin.myapplication.di.db
+package com.sachin.myapplication.di.db.user
 
 import android.content.Context
 import androidx.room.Room
