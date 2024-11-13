@@ -32,12 +32,6 @@ class UserViewModel @Inject constructor(
     fun insertUser(user: ArrayList<UM>) =
         viewModelScope.launch {
             userRepository.insertUsers(user)
-            loadUsers()
-        }
-
-    private fun loadUsers() =
-        viewModelScope.launch {
-            _users.postValue(userRepository.getUsers())
         }
 
 

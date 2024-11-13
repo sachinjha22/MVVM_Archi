@@ -66,7 +66,10 @@ class MainActivity : ComponentActivity() {
         }
 
         userViewModel.users.observe(this) { list ->
-            list?.let { userViewModel.insertUser(list as ArrayList<UM>) }
+            list?.let {
+                userViewModel.insertUser(list as ArrayList<UM>)
+                /// update your list here
+            }
         }
     }
 
@@ -113,12 +116,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun GreetingPreview() {
-//    MyApplicationTheme {
-//
-//    }
-//}
