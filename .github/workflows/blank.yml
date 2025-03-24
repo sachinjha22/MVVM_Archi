@@ -65,14 +65,10 @@ jobs:
         with:
           java-version: '17'
 
-      - name: Check Android SDK version
-        run: sdkmanager --list
-
       - name: Run espresso tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
-          arch: x86_64
           script: ./gradlew connectedCheck
           timeout: 10m
 
